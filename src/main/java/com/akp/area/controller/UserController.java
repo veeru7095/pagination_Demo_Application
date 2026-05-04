@@ -29,8 +29,9 @@ public class UserController {
 	
 	@PostMapping("/register")
 	public ResponseEntity<RegisterDto> register(@RequestBody RegisterDto registerDto) {
-		userRepository.findById(registerDto.getId()).orElseThrow(
-				()-> new UserAlreadyExists(String.format("User already exists by name %s", registerDto.getName())));
+		if(userRepository.existsByEmail(registerDto.getEmail())) {
+			throw new UserAlreadyExists(String.format("User already exists with email %s", registerDto.getEmail()));
+		}
 		return new ResponseEntity<RegisterDto>(userService.register(registerDto),HttpStatus.CREATED);
 	}
 	
