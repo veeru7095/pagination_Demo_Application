@@ -10,11 +10,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.akp.area.Dtos.CursorDto;
 import com.akp.area.Dtos.RegisterDto;
 import com.akp.area.Dtos.UserDtos;
 import com.akp.area.entity.User;
 import com.akp.area.exceptions.UserAlreadyExists;
 import com.akp.area.repository.UserRepository;
+import com.akp.area.services.CursorService;
 import com.akp.area.services.UserService;
 
 @RestController
@@ -23,6 +25,9 @@ public class UserController {
 
 	@Autowired
 	public UserService userService;
+	
+	@Autowired
+	public CursorService cursorService;
 	
 	@Autowired
 	public UserRepository userRepository;
@@ -41,5 +46,13 @@ public class UserController {
 			@RequestParam (defaultValue = "5")int size
 			) {
 		return userService.getAllUsers(page, size);
+	}
+	
+	@GetMapping("/get")
+	public ResponseEntity<CursorDto<User>> getAll(
+			@RequestParam(required = false) Long cursor,
+			@RequestParam(defaultValue = "0")int limit
+			){
+		return new ResponseEntity<CursorDto<User>>(cursorService.getAllUser(cursor, limit),HttpStatus.OK);
 	}
 }
