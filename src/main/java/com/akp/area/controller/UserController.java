@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.akp.area.Dtos.RegisterDto;
 import com.akp.area.Dtos.UserDtos;
+import com.akp.area.entity.User;
+import com.akp.area.exceptions.UserAlreadyExists;
+import com.akp.area.repository.UserRepository;
 import com.akp.area.services.UserService;
 
 @RestController
@@ -21,8 +24,13 @@ public class UserController {
 	@Autowired
 	public UserService userService;
 	
+	@Autowired
+	public UserRepository userRepository;
+	
 	@PostMapping("/register")
 	public ResponseEntity<RegisterDto> register(@RequestBody RegisterDto registerDto) {
+		userRepository.findById(registerDto.getId()).orElseThrow(
+				()-> new UserAlreadyExists(String.format("User already exists by name %s", registerDto.getName())));
 		return new ResponseEntity<RegisterDto>(userService.register(registerDto),HttpStatus.CREATED);
 	}
 	
